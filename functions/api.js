@@ -11,7 +11,7 @@ const app = express();
 
 // CORS
 const corsOptions = {
-    origin: 'https://casinosimulator.netlify.app/'
+    origin: ["https://casinosimulator.netlify.app/", "http://localhost:3000"]
 };
 
 console.log("APP");
