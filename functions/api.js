@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 // const db = require("../models");
 const mongoose = require("mongoose");
 const cors = require('cors');
-const { connect } = require('../controllers/wheel');
+// const { connect } = require('../controllers/wheel');
 const WheelSchema = require('../models/wheel.model.js');
 
 const MongoClient = require("mongodb").MongoClient;
@@ -13,6 +13,9 @@ const MONGO_DB_URI = process.env.MONGO_DB_URI;
 const DB_NAME = process.env.DB_NAME;
 const socketUrl = process.env.WS_URL;
 const socketOptions = { origin: process.env.ORIGIN };
+
+console.log(socketUrl);
+console.log(socketOptions);
 
 let cachedDb = null;
 
