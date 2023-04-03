@@ -14,22 +14,33 @@ const corsOptions = {
     origin: ["https://casinosimulator.netlify.app/", "http://localhost:3000"]
 };
 
-console.log("APP");
-
 app.use(cors(corsOptions));
 
+console.log(db);
+
 // MONGOOSE CONNECTION
-db.mongoose
-    .connect(db.url, db.mongoOptions)
-    .then(() => {
-        // Success
-        console.log("Successfully connected to Mongo Database.");
-        connect();
-    })
-    .catch((err) => {
-        console.error("Something went wrong.", err);
-        process.exit();
-    });
+const clientPromise = db.mongoose.connect(db.url, db.mongoOptions);
+
+const handler = async (event) => {
+  try {
+    console.log("TRY");
+    const db = (await clientPromise);
+    console.log(db);
+  } catch (error) {
+    return { statusCode: 500, body: error.toString() }
+  };
+};
+// db.mongoose
+//     .connect(db.url, db.mongoOptions)
+//     .then(() => {
+//         // Success
+//         console.log("Successfully connected to Mongo Database.");
+//         connect();
+//     })
+//     .catch((err) => {
+//         console.error("Something went wrong.", err);
+//         process.exit();
+//     });
 
 // MIDDLEWARE
 // Parse requests of content-type - application/json
