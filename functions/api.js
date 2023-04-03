@@ -18,12 +18,13 @@ async function getData() {
   });
 
   try {
-    console.log("ATTEMPTING");
     await client.connect();
     const test = await client
       .db('CSGO500')
       .collection('wheels')
       .find();
+    console.log("TEST: ");
+    console.log(test);
     return test;
   } catch (err) {
     console.log(err); // output to netlify function log
@@ -34,8 +35,8 @@ async function getData() {
 
 exports.handler = async function(event, context) {
   try {
-    console.log("TRYING");
     const data = await getData();
+    console.log("DATA:");
     console.log(data);
     return {
       statusCode: 200,
