@@ -47,50 +47,11 @@ module.exports.handler = async (event, context) => {
   // otherwise the connection will never complete, since
   // we keep the DB connection alive
   context.callbackWaitsForEmptyEventLoop = false;
+  context.timeout = 30000;
 
   const db = await connectToDatabase(MONGO_DB_URI);
   return queryDatabase(db);
 };
-
-// async function getData() {
-//   const uri =
-//     `${process.env.MONGO_DB_URI}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
-//   const client = new MongoClient(uri, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-//   });
-
-//   try {
-//     await client.connect();
-//     const test = await client
-//       .db('CSGO500')
-//       .collection('wheels')
-//       .find({});
-//     return test;
-//   } catch (err) {
-//     console.log(err); // output to netlify function log
-//   } finally {
-//     await client.close();
-//   }
-// }
-
-// exports.handler = async function(event, context) {
-//   try {
-//     const data = await getData();
-//     console.log("DATA:");
-//     console.log(data);
-//     return {
-//       statusCode: 200,
-//       body: JSON.stringify(data)
-//     };
-//   } catch (err) {
-//     console.log(err); // output to netlify function log
-//     return {
-//       statusCode: 500,
-//       body: JSON.stringify({ msg: err.message }) 
-//     };
-//   }
-// };
 
 const app = express();
 
