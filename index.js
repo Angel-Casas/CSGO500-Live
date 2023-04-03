@@ -47,7 +47,7 @@ if (process.env.NODE_ENV !== "test") {
     });
 }
 
-app.get('/api/wheels/latest', async (req, res) => {
+app.get('/wheels/latest', async (req, res) => {
     try {
       const lastWheel = await WheelSchema.findOne().sort({ nonce: -1 }).exec();
       console.log("SENDING");
@@ -56,7 +56,7 @@ app.get('/api/wheels/latest', async (req, res) => {
       console.error(err);
       res.status(500).send(err);
     }
-  });
+});
 
 
 module.exports = app;
