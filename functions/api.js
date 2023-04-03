@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require('cors');
 // const { connect } = require('../controllers/wheel');
+const WebSocket = require("ws");
 const WheelSchema = require('../models/wheel.model.js');
 
 const MongoClient = require("mongodb").MongoClient;
@@ -119,6 +120,24 @@ const connect = () => {
 };
 
 connect();
+
+// /**
+//  * Checks if the nonce is not the same and then creates a new Wheel object.
+//  * @param {object} wheel - The wheel object containing the information of the wheel result.
+//  * @returns {object} The new created wheel.
+//  */
+// const createWheel = async function(wheel) {
+//   // Check if the new wheel data has the same nonce as the latest wheel object in the database
+//   const lastWheel = await getLastWheel();
+//   if (lastWheel && lastWheel.nonce === wheel.nonce) {
+//       console.log(`[WHEEL] Skipping duplicate nonce ${wheel.nonce}`);
+//       return null;
+//   }
+//   return WheelSchema.create(wheel).then(docWheel => {
+//       console.log(`[WHEEL] Saved result for nonce ${docWheel.nonce}: ${wheel.result}×`);
+//       return docWheel;
+//   });
+// };
 
 module.exports.handler = async (event, context) => {
   // otherwise the connection will never complete, since
