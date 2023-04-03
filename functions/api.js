@@ -17,8 +17,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const dbName = process.env.NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME;
-const dbURI = process.env.NODE_ENV === "test" ? MONGO_DB_URI_TEST : MONGO_DB_URI;
+const dbName = process.env.NODE_ENV === "test" ? process.env.DB_NAME_TEST : process.env.DB_NAME;
+const dbURI = process.env.NODE_ENV === "test" ? process.env.MONGO_DB_URI_TEST : process.env.MONGO_DB_URI;
 
 const connection = mongoose
   .connect(`${dbURI}/${dbName}`, {
