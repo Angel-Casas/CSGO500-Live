@@ -1,7 +1,8 @@
 const express = require("express");
 const serverless = require("serverless-http");
 const bodyParser = require("body-parser");
-const db = require("../models");
+// const db = require("../models");
+const mongoose = require("mongoose");
 const cors = require('cors');
 const { connect } = require('../controllers/wheel');
 const WheelSchema = require('../models/wheel.model.js');
@@ -16,23 +17,35 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+const dbName = process.env.NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME;
+const dbURI = process.env.NODE_ENV === "test" ? MONGO_DB_URI_TEST : MONGO_DB_URI;
+
+const connection = mongoose
+  .connect(`${dbURI}/${dbName}`, {
+    useNewUrlParser: true,
+    keepAlive: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("SUCCESS");
+    connect();
+  })
+  .catch((err) => {
+    console.error("Something went wrong", err)
+  });
+
 // MONGOOSE CONNECTION
-try {
-  console.log("TRYING");
-  db.mongoose
-      .connect(db.url, db.mongoOptions)
-      .then(() => {
-          // Success
-          console.log("Successfully connected to Mongo Database.");
-          connect();
-      })
-      .catch((err) => {
-          console.error("Something went wrong.", err);
-          process.exit();
-      });
-} catch (error) {
-  console.log(error);
-}
+// db.mongoose
+//     .connect(db.url, db.mongoOptions)
+//     .then(() => {
+//         // Success
+//         console.log("Successfully connected to Mongo Database.");
+//         connect();
+//     })
+//     .catch((err) => {
+//         console.error("Something went wrong.", err);
+//         process.exit();
+//     });
 
 // MIDDLEWARE
 // Parse requests of content-type - application/json
