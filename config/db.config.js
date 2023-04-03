@@ -11,8 +11,6 @@ module.exports = {
         socketTimeoutMS: 90000,
         keepAlive: true,
         useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-        useFindAndModify: false
+        useUnifiedTopology: true
     }
 };
