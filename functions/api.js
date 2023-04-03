@@ -11,11 +11,14 @@ const MongoClient = require("mongodb").MongoClient;
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 const DB_NAME = process.env.DB_NAME;
-const socketUrl = process.env.WS_URL;
-const socketOptions = { origin: process.env.ORIGIN };
-
-console.log(socketUrl);
-console.log(socketOptions);
+const socketUrl = 'wss://socket.500.casino/socket.io/?EIO=3&transport=websocket';
+const socketOptions = {
+    headers: {
+        Origin: "https://500.casino"
+    }
+};
+// const socketUrl = process.env.WS_URL;
+// const socketOptions = { origin: process.env.ORIGIN };
 
 let cachedDb = null;
 
