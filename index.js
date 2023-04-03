@@ -20,6 +20,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+console.log("APP");
+
 // MONGOOSE CONNECTION
 db.mongoose
     .connect(db.url, db.mongoOptions)
@@ -48,6 +50,7 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 app.get('/wheels/latest', async (req, res) => {
+    console.log("CALL");
     try {
       const lastWheel = await WheelSchema.findOne().sort({ nonce: -1 }).exec();
       console.log("SENDING");
