@@ -7,6 +7,49 @@ const cors = require('cors');
 const { connect } = require('../controllers/wheel');
 const WheelSchema = require('../models/wheel.model.js');
 
+const { MongoClient } = require('mongodb');
+
+async function getData() {
+  const uri =
+    `${process.env.MONGO_DB_URI}/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+  const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
+
+  try {
+    console.log("ATTEMPTING");
+    await client.connect();
+    const test = await client
+      .db('CSGO500')
+      .collection('wheels')
+      .find();
+    return test;
+  } catch (err) {
+    console.log(err); // output to netlify function log
+  } finally {
+    await client.close();
+  }
+}
+
+exports.handler = async function(event, context) {
+  try {
+    console.log("TRYING");
+    const data = await getData();
+    console.log(data);
+    return {
+      statusCode: 200,
+      body: JSON.stringify(data)
+    };
+  } catch (err) {
+    console.log(err); // output to netlify function log
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ msg: err.message }) 
+    };
+  }
+};
+
 const app = express();
 
 
@@ -17,22 +60,22 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const dbName = process.env.NODE_ENV === "test" ? process.env.DB_NAME_TEST : process.env.DB_NAME;
-const dbURI = process.env.NODE_ENV === "test" ? process.env.MONGO_DB_URI_TEST : process.env.MONGO_DB_URI;
+// const dbName = process.env.NODE_ENV === "test" ? process.env.DB_NAME_TEST : process.env.DB_NAME;
+// const dbURI = process.env.NODE_ENV === "test" ? process.env.MONGO_DB_URI_TEST : process.env.MONGO_DB_URI;
 
-const connection = mongoose
-  .connect(`${dbURI}/${dbName}`, {
-    useNewUrlParser: true,
-    keepAlive: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("SUCCESS");
-    connect();
-  })
-  .catch((err) => {
-    console.error("Something went wrong", err)
-  });
+// const connection = mongoose
+//   .connect(`${dbURI}/${dbName}`, {
+//     useNewUrlParser: true,
+//     keepAlive: true,
+//     useUnifiedTopology: true,
+//   })
+//   .then(() => {
+//     console.log("SUCCESS");
+//     connect();
+//   })
+//   .catch((err) => {
+//     console.error("Something went wrong", err)
+//   });
 
 // MONGOOSE CONNECTION
 // db.mongoose
@@ -66,4 +109,4 @@ app.get('/wheels/latest', async (req, res) => {
 
 
 // Export app as a Netlify function
-exports.handler = serverless(app);
+// exports.handler = serverless(app);
