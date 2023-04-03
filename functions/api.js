@@ -62,20 +62,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
-// MONGOOSE CONNECTION
-db.mongoose
-    .connect(db.url, db.mongoOptions)
-    .then(() => {
-        // Success
-        console.log("Successfully connected to Mongo Database.");
-        connect();
-    })
-    .catch((err) => {
-        console.error("Something went wrong.", err);
-        process.exit();
-    });
-
 // MIDDLEWARE
 // Parse requests of content-type - application/json
 app.use(bodyParser.json({ limit: "50mb" }));
