@@ -18,6 +18,7 @@ app.use(cors(corsOptions));
 
 // MONGOOSE CONNECTION
 try {
+  console.log("TRYING");
   db.mongoose
       .connect(db.url, db.mongoOptions)
       .then(() => {
