@@ -11,12 +11,12 @@ const MongoClient = require("mongodb").MongoClient;
 
 const MONGO_DB_URI = process.env.MONGO_DB_URI;
 const DB_NAME = process.env.DB_NAME;
+const socketUrl = process.env.WS_URL;
+const socketOptions = { origin: process.env.ORIGIN };
 
 let cachedDb = null;
 
 const connectToDatabase = async (uri) => {
-  // we can cache the access to our database to speed things up a bit
-  // (this is the only thing that is safe to cache here)
   if (cachedDb) return cachedDb;
 
   const client = await MongoClient.connect(uri, {
@@ -34,17 +34,85 @@ const queryDatabase = async (db) => {
   console.log("Results:");
   console.log(results);
 
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    },
-    body: JSON.stringify(results),
-  };
+  return results;
 };
+
+// const queryDatabase = async (db) => {
+//   const results = await db.collection("wheels").find({}).toArray();
+
+//   console.log("Results:");
+//   console.log(results);
+
+//   return {
+//     statusCode: 200,
+//     headers: {
+//       "Content-Type": "application/json",
+//       "Access-Control-Allow-Origin": "*",
+//       "Access-Control-Allow-Headers": "Content-Type",
+//       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+//     },
+//     body: JSON.stringify(results),
+//   };
+// };
+
+const createWheel = async (wheelData) => {
+  const db = await connectToDatabase(MONGO_DB_URI);
+  const result = await db.collection("wheels").insertOne(wheelData);
+
+  console.log("Inserted wheel with ID: ", result.insertedId);
+
+  return result;
+};
+
+const connect = () => {
+  const wheelPingIntervalTime = 10000;
+  let wheelPingInterval;
+
+  const wheelSocket = new WebSocket(socketUrl, ["websocket"], socketOptions);
+
+  console.log("[WHEEL] Connecting to WebSocket...");
+
+  wheelSocket.on("open", () => {
+    console.log("[WHEEL] Connected. Waiting for messages from WebSocket...");
+
+    wheelPingInterval = setInterval(() => {
+      if (wheelSocket.readyState === WebSocket.OPEN) {
+        wheelSocket.send("2");
+      }
+    }, wheelPingIntervalTime);
+  });
+
+  wheelSocket.on("close", () => {
+    console.log("[WHEEL] Disconnected.");
+
+    clearInterval(wheelPingInterval);
+
+    setTimeout(connect, 1000);
+  });
+
+  wheelSocket.on("message", async (data) => {
+    data = data.toString();
+
+    if (data.includes('42["round-end",')) {
+      const roundResult = JSON.parse(
+        data.replace('42["round-end",', "").slice(0, -1)
+      );
+
+      const wheelData = {
+        roundId: roundResult.winner.roundId,
+        nonce: roundResult.winner.nonce,
+        startDate: roundResult.winner.startDate,
+        endDate: roundResult.winner.endDate,
+        random: roundResult.winner.random,
+        result: WHEEL_MULTIPLIER_MAPPING[roundResult.winner.choice],
+      };
+
+      await createWheel(wheelData);
+    }
+  });
+};
+
+connect();
 
 module.exports.handler = async (event, context) => {
   // otherwise the connection will never complete, since
@@ -53,8 +121,41 @@ module.exports.handler = async (event, context) => {
   context.timeout = 30000;
 
   const db = await connectToDatabase(MONGO_DB_URI);
-  return queryDatabase(db);
+  const results = await queryDatabase(db);
+
+  return {
+    statusCode: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    },
+    body: JSON.stringify(results);
+  };
 };
+
+// module.exports.handler = async (event, context) => {
+//   // connect to the database
+//   const db = await connectToDatabase(MONGO_DB_URI);
+
+//   // keep the socket connection alive
+//   connect();
+
+//   // execute the function every 10 seconds
+//   setInterval(() => {
+//     queryDatabase(db);
+//   }, 10000);
+
+//   // return the initial response
+//   return {
+//     statusCode: 200,
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ message: "Connected to database and started wheel updates." }),
+//   };
+// };
 
 const app = express();
 
