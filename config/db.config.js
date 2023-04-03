@@ -3,7 +3,10 @@ require("dotenv").config({
     path: path.join(__dirname, "../env/", ".env")
 });
 
+console.log(process.env);
+
 const { MONGO_DB_URI_TEST, MONGO_DB_URI, DB_NAME, DB_NAME_TEST } = process.env;
+
 
 const dbName = process.env.NODE_ENV === "test" ? DB_NAME_TEST : DB_NAME;
 const dbURI = process.env.NODE_ENV === "test" ? MONGO_DB_URI_TEST : MONGO_DB_URI;
