@@ -20,8 +20,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-console.log("APP");
-
 // MONGOOSE CONNECTION
 db.mongoose
     .connect(db.url, db.mongoOptions)
@@ -48,18 +46,5 @@ if (process.env.NODE_ENV !== "test") {
         console.log(`Listening on port ${port}.`);
     });
 }
-
-app.get('/wheels/latest', async (req, res) => {
-    console.log("CALL");
-    try {
-      const lastWheel = await WheelSchema.findOne().sort({ nonce: -1 }).exec();
-      console.log("SENDING");
-      res.send(lastWheel);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send(err);
-    }
-});
-
 
 module.exports = app;

@@ -14,6 +14,8 @@ const corsOptions = {
     origin: 'https://casinosimulator.netlify.app/'
 };
 
+console.log("APP");
+
 app.use(cors(corsOptions));
 
 // MONGOOSE CONNECTION
@@ -35,7 +37,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 // Parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-app.get('/api/wheels/latest', async (req, res) => {
+app.get('/wheels/latest', async (req, res) => {
     try {
       const lastWheel = await WheelSchema.findOne().sort({ nonce: -1 }).exec();
       console.log("SENDING");
