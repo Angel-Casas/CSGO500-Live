@@ -19,28 +19,17 @@ app.use(cors(corsOptions));
 console.log(db);
 
 // MONGOOSE CONNECTION
-const clientPromise = db.mongoose.connect(db.url, db.mongoOptions);
-
-const handler = async (event) => {
-  try {
-    console.log("TRY");
-    const db = (await clientPromise);
-    console.log(db);
-  } catch (error) {
-    return { statusCode: 500, body: error.toString() }
-  };
-};
-// db.mongoose
-//     .connect(db.url, db.mongoOptions)
-//     .then(() => {
-//         // Success
-//         console.log("Successfully connected to Mongo Database.");
-//         connect();
-//     })
-//     .catch((err) => {
-//         console.error("Something went wrong.", err);
-//         process.exit();
-//     });
+db.mongoose
+    .connect(db.url, db.mongoOptions)
+    .then(() => {
+        // Success
+        console.log("Successfully connected to Mongo Database.");
+        connect();
+    })
+    .catch((err) => {
+        console.error("Something went wrong.", err);
+        process.exit();
+    });
 
 // MIDDLEWARE
 // Parse requests of content-type - application/json

@@ -10,6 +10,7 @@ const db = {};
 
 db.mongoose = mongoose;
 db.url = dbConfig.url;
+db.mongoOptions = dbConfig.mongoOptions;
 db.crash = require("./crash.model.js")(mongoose);
 db.wheel = require("./wheel.model.js")(mongoose);
 
