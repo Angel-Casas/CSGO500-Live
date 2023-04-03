@@ -82,6 +82,7 @@ app.get('/wheels/latest', async (req, res) => {
 });
 
 app.get('/wheels', async (req, res) => {
+  console.log("fetch all");
   const results = await WheelSchema.find().sort({ nonce: -1 }).limit(100);
   res.json(results);
 });
