@@ -16,20 +16,22 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-console.log(db);
-
 // MONGOOSE CONNECTION
-db.mongoose
-    .connect(db.url, db.mongoOptions)
-    .then(() => {
-        // Success
-        console.log("Successfully connected to Mongo Database.");
-        connect();
-    })
-    .catch((err) => {
-        console.error("Something went wrong.", err);
-        process.exit();
-    });
+try {
+  db.mongoose
+      .connect(db.url, db.mongoOptions)
+      .then(() => {
+          // Success
+          console.log("Successfully connected to Mongo Database.");
+          connect();
+      })
+      .catch((err) => {
+          console.error("Something went wrong.", err);
+          process.exit();
+      });
+} catch (error) {
+  console.log(error);
+}
 
 // MIDDLEWARE
 // Parse requests of content-type - application/json
